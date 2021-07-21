@@ -25,4 +25,4 @@ tempsnew = np.linspace(0.5, 1000, 100)
 plt.loglog(tempsnew, smooth(tempsnew), "-")
 
 plt.show()
-#yeah
+#yeahyo
