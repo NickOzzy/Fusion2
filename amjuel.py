@@ -1,3 +1,5 @@
+#reproducing crude version of reaction 2.0c Amjuel
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
@@ -20,9 +22,8 @@ for T in temps:
       ratios.append(np.exp(calc(T)))
 
 print(ratios)
-smooth = interp1d(temps, ratios, kind="cubic")
-tempsnew = np.linspace(0.5, 1000, 100)
-plt.loglog(tempsnew, smooth(tempsnew), "-")
+
+plt.loglog(temps, ratios, "-")
 
 plt.show()
 #okok
