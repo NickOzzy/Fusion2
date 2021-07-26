@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
-t_e = [0.1, 0.2, 0.5, 1, 2, 5, 10]
+t_e = np.logspace(0, 1.3, 100)
 n_e = 2e18
 
-nh2_rat = []
+nh2 = []
 for t in t_e:
-    nh2_rat.append(1.8911e20/(2e28*(t**1.4705)))
+    nh2.append(1.8911e20/((t**1.4705)))
 
-plt.plot(t_e, nh2_rat, "x")
+plt.plot(t_e, nh2, "x")
 plt.xscale("log")
 plt.ylabel("density of H2")
 plt.xlabel("Temp in eV")

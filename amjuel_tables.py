@@ -2,8 +2,9 @@ import numpy as np
 import math
 from mat4py import loadmat
 
-mat = loadmat('get_amjuel.mat')
+mat = loadmat('get_amjuel (3).mat')
 print(mat["AMJ"].keys())
+print(mat["AMJ"]["H11_2_0c"]["table"])
 
 
 
@@ -24,6 +25,9 @@ def amjuel_tables(type, table, ne, te):
         return sigmav
     elif type == "h2":
         sigmav = h2_rate(table, te)
+        return sigmav
+    elif type == "h11":
+        sigmav = h11_rate(table, te)
         return sigmav
 
 def h4_rate(h4_table, ne, Te):
@@ -54,3 +58,16 @@ def h2_rate(h2_table, Te):
     sigmav = 1e-6*(np.exp(temp))
     return sigmav
 
+
+def h11_rate(h11_table, Te):
+    try:
+        mat["AMJ"][h11_table]["table"]
+    except KeyError:
+        sigmav = math.nan
+        return sigmav
+
+    total = 0
+    for i in range(0, 9):
+        total = total + (mat["AMJ"][h11_table]["table"][i] * (np.log(Te) ** i))
+    sigmav = np.exp(total)
+    return sigmav
