@@ -21,6 +21,25 @@ def find_nh2(T):
 def get_H3plus_H2_ratio(ne, Te):
     return ajt.amjuel_tables('h11', "H11_4_0a", ne, Te)
 
+def get_Hminus_H2_ratio(ne, Te):
+    return ajt.amjuel_tables('h11', "H11_7_0a", ne, Te)
+
+# get nH-
+temps = [1, 1.5, 2, 3, 7, 10, 15, 20]
+nhminuses = []
+for temp in temps:
+    nhminuses.append(get_Hminus_H2_ratio(2e19, temp)*find_nh2(temp))
+    print("Temp="+str(temp)+": Density H-="+str(nhminuses[-1])+" nh2="+str(find_nh2(temp))
+          +"; nh2+="+str(get_H2plus_H2_ratio(2e19, temp)*find_nh2(temp))
+          +"; nh3+="+str(get_H3plus_H2_ratio(2e19, temp)*
+                         get_H2plus_H2_ratio(2e19, temp)*(find_nh2(temp)**2)/2e19))
+plt.loglog(temps, nhminuses, "x")
+plt.xlabel("Temp in eV")
+plt.ylabel("H- denisty")
+plt.show()
+
+
+
 
 
 
@@ -37,11 +56,18 @@ for ne in nes:
     for temp in temps:
         ratios.append(get_H2plus_H2_from_single_poly(ne, temp))
     plt.loglog(temps, ratios, "o")
-
+#
 # for ne in nes:
 #     ratios = []
 #     for temp in temps:
 #         ratios.append(get_H3plus_H2_ratio(ne, temp))
+#     print(ratios)
+#     plt.loglog(temps, ratios, "o")
+#
+# for ne in nes:
+#     ratios = []
+#     for temp in temps:
+#         ratios.append(get_Hminus_H2_ratio(ne, temp))
 #     print(ratios)
 #     plt.loglog(temps, ratios, "o")
 #

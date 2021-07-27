@@ -2,9 +2,9 @@ import numpy as np
 import math
 from mat4py import loadmat
 
-mat = loadmat('get_amjuel (3).mat')
+mat = loadmat('get_amjuel (4).mat')
 print(mat["AMJ"].keys())
-print(mat["AMJ"]["H11_2_0c"]["table"])
+
 
 
 
