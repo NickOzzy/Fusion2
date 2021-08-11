@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.io as spio
-from scipy.interpolate import interp2d, RegularGridInterpolator, interpn
+from scipy.interpolate import interp2d, LinearNDInterpolator, interpn, RegularGridInterpolator, griddata
 
-np.set_printoptions(threshold=np.inf)
+#np.set_printoptions(threshold=np.inf)
 
 def TECPEC_Yacora(type, N, Ne, Tev, TiHmP, TiHpP):
     #return PECv
@@ -15,26 +15,28 @@ def TECPEC_Yacora(type, N, Ne, Tev, TiHmP, TiHpP):
         PECv = np.zeros((len(N), len(Ne)))
         PECv[PECv == 0] = np.nan
         for i in range(0, len(N)):
-            PECv[i][:] = interp2L(data['nel'], data['Te'], np.squeeze(data['PEC'][:][:][N[i]]), Ne, Tev)
+            PECv[i,:] = interp2L(data['nel'], data['Te'], np.squeeze(data['PEC'][:][:][N[i]]), Ne, Tev)
         return PECv
 
     elif type == 'HmHp':
-        TiHmP = TiHmP[:]*11600
-        TiHpP = TiHpP[:]*11600
-        TiHmP = np.clip(TiHmP, min(data['TiHmP']), max(data['TiHmP']))
-        TiHpP = np.clip(TiHpP, min(data['TiHpP']), max(data['TiHpP']))
+        TiHmP = [element * 11600 for element in TiHmP]
+        TiHpP = [element * 11600 for element in TiHpP]
+        TiHmP = np.clip(TiHmP, min(TiHmP), max(TiHmP))
+        TiHpP = np.clip(TiHpP, min(TiHpP), max(TiHpP))
 
-        AdjF = interp2d((data['TiHmP'], data['TiHpP']), data['AdjF'], (TiHmP, TiHpP))
-        PECv = np.zeros(len(N), len(Ne))
+        AdjF = interp2d(data['TiHmP'], data['TiHpP'], data['AdjF'])
+        p=AdjF(TiHmP, TiHpP)
+        PECv = np.zeros((len(N), len(Ne)))
         PECv[PECv == 0] = np.nan
         for i in range(0,len(N)):
-            PECv[i][:] = AdjF * interp2L(data['nel'], data['Te'], np.squeeze(data['PEC'][:][:][N[i]]), Ne, Tev)
+            PECv[i, :] = interp2L(data['nel'], data['Te'], data['PEC'][:, :, N[i]], Ne, Tev)
+            #PECv[i,:] = AdjF(TiHmP, TiHpP) * interp2L(data['nel'], data['Te'], np.squeeze(data['PEC'][:,:,N[i]]), Ne, Tev)
         return
 
     elif type == 'HmH2p':
 
-        TiHmP = TiHmP[:] * 11600
-        TiHpP = TiHpP[:] * 11600
+        TiHmP = [element * 11600 for element in TiHmP]
+        TiHpP = [element * 11600 for element in TiHpP]
         TiHmP = np.clip(TiHmP, min(data['TiHm']), max(data['TiHm']))
         TiHpP = np.clip(TiHpP, min(data['TiH2p']), max(data['TiH2p']))
 
@@ -42,20 +44,23 @@ def TECPEC_Yacora(type, N, Ne, Tev, TiHmP, TiHpP):
         PECv[PECv == 0] = np.nan
 
         for i in range(0, len(N)):
-            PECv[i][:] = interp4L(data['nel'], data['TiHm'], data['TiH2p'], data['Te'], np.squeeze(data['PEC'][:][:][:][:][N(i)]), Ne, TiHmP, TiHpP, Tev)
+            PECv[i][:] = interp4L(data['nel'], data['TiHm'], data['TiH2p'], data['Te'], data['PEC'][:,:,:,:,N[i]], Ne, TiHmP, TiHpP, Tev)
         return
 
 
 def interp2L(x, y, V, xN, yN):
-    F = RegularGridInterpolator((np.log10(x), np.log10(y)), np.log10(V))
-    return 10 ** F(np.log10(xN), np.log10(yN))
+    point = (np.log10(xN), np.log10(yN))
+    #F = griddata((np.log10(x), np.log10(y)), np.log10(V), point)
+    #return 10 ** F(np.log10(xN), np.log10(yN))
+    return 10 ** griddata((np.log10(x), np.log10(y)), np.log10(V), point)
+
 
 def interp4L(x, y, x1, x2, V, xN, yN, xN1, xN2):
-    point = np.array(np.log10(xN), np.log10(yN), np.log10(xN1), np.log10(xN2))
-    return 10 ** interpn(np.array((np.log10(x), np.log10(y), np.log10(x1), np.log10(x2))), np.log10(V), point)
+    point = ((np.ravel(np.log10(xN)), np.ravel(np.log10(yN)), np.ravel(np.log10(xN1)), np.ravel(np.log10(xN2))))
+    return 10 ** interpn((np.ravel(np.log10(x)), np.ravel(np.log10(y)), np.ravel(np.log10(x1)), np.ravel(np.log10(x2))), np.log10(V), point)
 
-print(TECPEC_Yacora('H2', [4], [2e19], [1], None, None))
-print(TECPEC_Yacora('H2p', [4], [2e19], [1], None, None))
-print(TECPEC_Yacora('H3p', [3], [2e19], [1], None, None))
-print(TECPEC_Yacora('HmH2p', [5], [2e19], [1], [2.2], [1]))
+#print(TECPEC_Yacora('H2', [4], [2e19], [1], None, None))
+#print(TECPEC_Yacora('H2p', [4], [2e19], [1], None, None))
+#print(TECPEC_Yacora('H3p', [3], [2e19], [1], None, None))
+print(TECPEC_Yacora('HmHp', [4], [2e19], [1], [2.2], [1]))
 #print(TECPEC_Yacora('HmHp', 5, 2e19, 1, 2.2, 1))
