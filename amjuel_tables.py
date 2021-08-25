@@ -29,6 +29,10 @@ def amjuel_tables(type, table, ne, te):
     elif type == "h11":
         sigmav = h11_rate(table, te)
         return sigmav
+    elif type == "h12":
+        sigmav = h12_rate(table, ne, te)
+        return sigmav
+
 
 def h4_rate(h4_table, ne, Te):
     try:
@@ -44,6 +48,7 @@ def h4_rate(h4_table, ne, Te):
             temp = temp + mat["AMJ"][h4_table]["table"][i][j]*(np.log(Te)**i)*(np.log(ne/1e8)**j)
     sigmav = 1e-6*np.exp(temp)
     return sigmav
+
 
 def h2_rate(h2_table, Te):
     try:
@@ -63,11 +68,27 @@ def h11_rate(h11_table, Te):
     try:
         mat["AMJ"][h11_table]["table"]
     except KeyError:
-        sigmav = math.nan
-        return sigmav
+        ratio = math.nan
+        return ratio
 
     total = 0
     for i in range(0, 9):
         total = total + (mat["AMJ"][h11_table]["table"][i] * (np.log(Te) ** i))
-    sigmav = np.exp(total)
-    return sigmav
+    ratio = np.exp(total)
+    return ratio
+
+
+def h12_rate(h12_table, ne, Te):
+    try:
+        mat["AMJ"][h12_table]["table"]
+    except KeyError:
+        ratio = math.nan
+        return ratio
+
+    ne = ne/1e6
+    total = 0
+    for i in range(0, 9):
+        for j in range(0, 9):
+            total = total + mat["AMJ"][h12_table]["table"][i][j]*(np.log(Te)**i)*(np.log(ne/1e8)**j)
+    ratio = np.exp(total)
+    return ratio

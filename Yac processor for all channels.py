@@ -88,8 +88,8 @@ def ADAS():
 
 def Channels():
     # get all PCs
-    chans = ["H2", "H2plus", "H3plus", "H-"]
-    density = ["2e19"]
+
+
     levels = np.arange(3, 10)
     for level in levels:
         for T in T_vals_full:
@@ -128,19 +128,28 @@ def Channels():
             Channels.PCs["CHAN=H3+n=" + str(level) + "Den=2e19T=" + str(T)]["PEC"] = \
                 Channels.PCs["CHAN=H3+n=" + str(level) + "Den=2e19T=" + str(T)]["PC"] * NIST_As["n=" + str(level)]
 
-    print(Channels.PCs["CHAN=H2n=6Den=2e19T=10"].iloc[0]["PC"])
-    print(Channels.PCs["CHAN=H2n=6Den=2e19T=10"].iloc[0]["PEC"])
+    for level in levels:
+        for T in T_vals_full:
+            print("Channel=H-, n="+str(level)+", Den = 2e19, T="+str(T)+": PC is: "
+                  +str(Channels.PCs["CHAN=H-n="+str(level)+"Den=2e19T="+str(T)].iloc[0]["PC"]))
+            print("Channel=H-, n=" + str(level) + ", Den = 2e19, T=" + str(T) + ": PEC is: "
+                  + str((Channels.PCs["CHAN=H-n=" + str(level) + "Den=2e19T=" + str(T)].iloc[0]["PC"]*NIST_As["n="+str(level)])))
 
-    print(Channels.PCs["CHAN=H2+n=6Den=2e19T=10"].iloc[0]["PC"])
-    print(Channels.PCs["CHAN=H2+n=6Den=2e19T=10"].iloc[0]["PEC"])
-
-    print(Channels.PCs["CHAN=H-n=6Den=2e19T=10"].iloc[0]["PC"])
-    print(Channels.PCs["CHAN=H-n=6Den=2e19T=10"].iloc[0]["PEC"])
-
-
-
-
-
+    # print(Channels.PCs["CHAN=H2n=3Den=2e19T=1"].iloc[0]["PC"])
+    # print(Channels.PCs["CHAN=H2n=3Den=2e19T=1"].iloc[0]["PEC"])
+    #
+    # print(Channels.PCs["CHAN=H2+n=6Den=2e19T=10"].iloc[0]["PC"])
+    # print(Channels.PCs["CHAN=H2+n=6Den=2e19T=10"].iloc[0]["PEC"])
+    #
+    # print(Channels.PCs["CHAN=H-n=6Den=2e19T=10"].iloc[0]["PC"])
+    # print(Channels.PCs["CHAN=H-n=6Den=2e19T=10"].iloc[0]["PEC"])
+    #
+    #
+    # print("Channel=H-n=3Den=5e19T=2__PC is:"+str(Channels.PCs["CHAN=H-n=3Den=5e19T=2"].iloc[0]["PC"]))
+    # print(" PEC is:" + str(Channels.PCs["CHAN=H-n=3Den=5e19T=2"].iloc[0]["PEC"]))
+    #
+    # print("Channel=H-n=4Den=5e19T=2__PC is:" + str(Channels.PCs["CHAN=H-n=4Den=5e19T=2"].iloc[0]["PC"]))
+    # print(" PEC is:" + str(Channels.PCs["CHAN=H-n=4Den=5e19T=2"].iloc[0]["PEC"]))
 
 
 def plots():
@@ -299,4 +308,4 @@ if __name__ == '__main__':
     ADAS()
     Yac_data()
     Channels()
-    plots()
+    #plots()

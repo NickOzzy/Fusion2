@@ -2,13 +2,16 @@ import numpy as np
 import scipy.io as spio
 from scipy.interpolate import interp2d, LinearNDInterpolator, interpn
 
+"""Gives excellent agreement with original data for H2, H2+, H3+.  
+For H-, %D=8%.  
+FOr H-H2+ comparison not made."""
+
 
 def TECPEC_Yacora(type, N, Ne, Tev, TiHmP, TiHpP):
-    #return PECv
     data = spio.loadmat('Yacora_data_' + type + '.mat')
     Ne = np.clip(Ne, min(data['nel']), max(data['nel']))
     Tev = np.clip(Tev, min(data['Te']), max(data['Te']))
-
+    N = [x -1 for x in N]
 
     if type != 'HmHp' and type != 'HmH2p':
         PECv = np.zeros((len(N), len(Ne)))
@@ -72,9 +75,10 @@ def interpN(points, V, point):
 
 
 
-TECPEC_Yacora('H2', [4], [5e20], [0.15], None, None)
-TECPEC_Yacora('H2p', [6], [6e19], [0.32], None, None)
-TECPEC_Yacora('H3p', [1], [7e18], [18], None, None)
-TECPEC_Yacora('HmHp', [3], [6.1e21], [0.169], [3.5], [4.1])
-TECPEC_Yacora('HmH2p', [5], [4.5e19], [1.2], [1.2], [5.1])
+for x in range(3,8):
+    # TECPEC_Yacora('H2', [x], [2e19], [1], None, None)
+    # TECPEC_Yacora('H2p', [x], [2e19], [2], None, None)
+    # TECPEC_Yacora('H3p', [x], [2e19], [7], None, None)
+    TECPEC_Yacora('HmHp', [x], [2e19], [3], [2.2], [3])
+    # TECPEC_Yacora('HmH2p', [5], [4.5e19], [1.2], [1.2], [5.1])
 
