@@ -22,8 +22,7 @@ def Yac_data():
                 R_tab = currRec.loc[currRec['Temp'] == T_val]
                 Rec_PC_dict["n=" + str(i) + "Den=" + D_val + "T=" + str(T_val)] = R_tab.loc[R_tab['Density'] == float(D_val)]
 
-    # print(Exc_PC_dict)
-    # exit()
+
 
     # make Balmer PECs
     for n in range(3, 8):
