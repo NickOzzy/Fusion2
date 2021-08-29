@@ -10,7 +10,7 @@ matplotlib.use('TkAgg')
 
 
 
-def assemble(Density):
+def assemble(Density, no_ne):
     ratios_ADAS = {}
     for j, pair in enumerate(pairs):
         for k, T in enumerate(T_vals):
@@ -24,7 +24,7 @@ def assemble(Density):
 
 def plotting():
         data = []
-        data_dict = assemble(Density)
+        data_dict = assemble(density, no_ne)
         graph = []
         spline_graph = []
 
@@ -46,17 +46,19 @@ def plotting():
         return graph
 
 
-def update_density(val):
+def update(val):
     data = []
-    new_den = str('{:0.0e}'.format(10**(D_Slider.val), 0)).replace("+", "")
-    data_dict = assemble(new_den)
+    density = str('{:0.0e}'.format(10**(D_Slider.val), 0)).replace("+", "")
+    no_ne = no_ne_Slider.val
+    data_dict = assemble(density, no_ne)
     for i, pair in enumerate(pairs):
         data.append({'Temp': T_vals, 'ratio': [val for key, val in data_dict.items() if pair in key]})
         graph_frame = pd.DataFrame(data[i], columns=['Temp', 'ratio'])
         y_axis = graph_frame['ratio'].tolist()
         graph[i][0].set_ydata(y_axis)
-    D_Slider.valtext.set_text(new_den+" /m^3")
+    D_Slider.valtext.set_text(density+" /m^3")
     fig.canvas.draw_idle()
+
 
 
 
@@ -71,24 +73,26 @@ if __name__ == '__main__':
 
     ADAS_Excitation_PECs = np.load("ADAS_Exc_PECs.npy", allow_pickle=True).item()
     ADAS_Recombination_PECs = np.load("ADAS_Rec_PECs.npy", allow_pickle=True).item()
-    no_ne = 0.1
-    Density = "2e19"
+    no_ne, density = 0.1, "2e19"
+
 
     pairs = []
     for n in range(4,8):
         pairs.append("B=" + str(n) + "/" + "B=" + str(n-1))
 
     fig = plt.figure()
-    plt.subplots_adjust(bottom=0.2)
+    plt.subplots_adjust(bottom=0.4)
     graph = plotting()
-    D_axis = plt.axes([0.1, 0.05, 0.7, 0.02])
+    D_axis = plt.axes([0.1, 0.25, 0.7, 0.02])
     steps = [np.log10(5e18), np.log10(1e19), np.log10(2e19), np.log10(5e19), np.log10(1e20), np.log10(2e20)]
-    min = np.log10(5e18)
-    max = np.log10(2e20)
-    dinit = np.log10(2e19)
-    D_Slider = Slider(D_axis, "Density", min, max, valinit=dinit, valstep=steps)
-    D_Slider.valtext.set_text(Density+" /m^3")
-    D_Slider.on_changed(update_density)
+    dmin, dmax, dinit = np.log10(5e18), np.log10(2e20), np.log10(5e19)
+    D_Slider = Slider(D_axis, "density", dmin, dmax, valinit=dinit, valstep=steps)
+    D_Slider.valtext.set_text(density+" /m^3")
+    D_Slider.on_changed(update)
+    no_ne_axis = plt.axes([0.1, 0.15, 0.7, 0.02])
+    no_nemin, no_nemax = 0, 1.1
+    no_ne_Slider = Slider(no_ne_axis, "no/ne", no_nemin, no_nemax, valinit=0.1, valstep=np.arange(0, 1.11, 0.01))
+    no_ne_Slider.on_changed(update)
     plt.show()
     # print(ADAS_Excitation_PECs["n=6Den=2e19T=7"].iloc[0]["PEC"])
     # print(ADAS_Excitation_PECs["n=3Den=5e19T=1"].iloc[0]["PEC"])
