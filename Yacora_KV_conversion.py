@@ -22,8 +22,8 @@ def TECPEC_Yacora(type, N, Ne, Tev, TiHmP, TiHpP):
                 for k in range(0, len(data['Te'])):
                     coords.append((np.log10(data['nel'][j][0]), np.log10(data['Te'][k][0])))
             PECv[i, :] = interp2L(coords, np.ravel(data['PEC'][:, :, N[i]-1]), Ne, Tev)
-        print(type + ' PEC = ' + str(PECv))
-        return
+        #print(type + ' PEC = ' + str(PECv))
+        return PECv[0][0]
 
     elif type == 'HmHp':
         TiHmP = [element * 11600 for element in TiHmP]
@@ -41,8 +41,8 @@ def TECPEC_Yacora(type, N, Ne, Tev, TiHmP, TiHpP):
                 for k in range(0, len(data['nel'])):
                     coords.append((np.log10(data['nel'][k][0]), np.log10(data['Te'][j][0])))
             PECv[i, :] = p * interp2L(coords, np.ravel(data['PEC'][:, :, N[i]-1]), Ne, Tev)
-        print(type + ' PEC = ' + str(PECv))
-        return
+        #print(type + ' PEC = ' + str(PECv))
+        return PECv[0][0]
 
     elif type == 'HmH2p':
         TiHmP = [element * 11600 for element in TiHmP]
@@ -60,8 +60,8 @@ def TECPEC_Yacora(type, N, Ne, Tev, TiHmP, TiHpP):
         pnts4 = np.log10([val for sublist in points[3] for val in sublist])
         for i in range(0, len(N)):
             PECv[i][:] = interpN((pnts1, pnts2, pnts3, pnts4), data['PEC'][:, :, :, :, N[i]-1], (Ne, TiHmP, TiHpP, Tev))
-        print(type + ' PEC = ' + str(PECv))
-        return
+        #print(type + ' PEC = ' + str(PECv))
+        return PECv[0][0]
 
 
 def interp2L(coords, V, xN, yN):
