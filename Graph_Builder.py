@@ -6,8 +6,8 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 
-def find_nh2(T):
-   return(1.8911e20 / ((T ** 1.4705)))
+# def find_nh2(T):
+#    return(1.8911e20 / ((T ** 1.4705)))
 
 def find_nh2ii(T, dl):
     return(10**17.2/(dl*(T ** 1.7)))
@@ -154,6 +154,7 @@ if __name__ == '__main__':
     dLaxis = plt.axes([0.55, 0.25, 0.35, 0.02])
     dLmin, dLmax, dLinit = 0.01, 0.5, 0.05
     deltaL = Slider(dLaxis, "delta L", dLmin, dLmax, valinit=dLinit, valstep=np.arange(0.01, 0.501, 0.01))
+    deltaL.valtext.set_text("0.05 cm")
     deltaL.on_changed(update)
     plt.show()
 
