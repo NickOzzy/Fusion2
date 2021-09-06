@@ -6,20 +6,17 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 
-# def find_nh2(T):
-#    return(1.8911e20 / ((T ** 1.4705)))
-
-def find_nh2ii(T, dl):
-    return(10**17.2/(dl*(T ** 1.7)))
+def find_nh2ii(T, dl, b):
+    return(10**17.2/(dl*(T ** b)))
 
 
-def assemble(Density, no_ne, dl, h2flag, h2pflag, h3pflag, hmhpflag, hmh2pflag):
+def assemble(Density, no_ne, dl, b, h2flag, h2pflag, h3pflag, hmhpflag, hmh2pflag):
     D = float(Density)
     ratios_ADAS = {}
     ratios_Yacora = {}
     for j, pair in enumerate(pairs):
         for k, T in enumerate(T_vals):
-            nh2 = find_nh2ii(T, dl)
+            nh2 = find_nh2ii(T, dl, b)
             if h2flag:
                 nh2_ne = nh2/D
             else:
@@ -67,7 +64,7 @@ def assemble(Density, no_ne, dl, h2flag, h2pflag, h3pflag, hmhpflag, hmh2pflag):
 
 def plotting():
         data = []
-        data_dict_A, data_dict_Y = assemble(density, no_ne, 0.05, False, False, False, False, False)
+        data_dict_A, data_dict_Y = assemble(density, no_ne, 0.05, 1.7, False, False, False, False, False)
         graph = []
         graph2 = []
 
@@ -93,7 +90,8 @@ def update(val):
     density = str('{:0.0e}'.format(10**(D_Slider.val), 0)).replace("+", "")
     no_ne = no_ne_Slider.val
     dl = deltaL.val
-    data_dict_A, data_dict_Y = assemble(density, no_ne, dl, Y_radio.get_status()[2], Y_radio.get_status()[3],
+    b = bval.val
+    data_dict_A, data_dict_Y = assemble(density, no_ne, dl, b, Y_radio.get_status()[2], Y_radio.get_status()[3],
                                         Y_radio.get_status()[4], Y_radio.get_status()[5], Y_radio.get_status()[6])
     for i, pair in enumerate(pairs):
         data.append({'Temp': T_vals, 'ratio': [val for key, val in data_dict_A.items() if pair in key],
@@ -151,10 +149,14 @@ if __name__ == '__main__':
                                           'Yacora - include H2+', 'Yacora - include H3+', 'Yacora - include H-H+',
                                           'Yacora - include H-H2+'], [True, False, False, False, False, False, False])
     Y_radio.on_clicked(update)
-    dLaxis = plt.axes([0.55, 0.25, 0.35, 0.02])
+    plt.figtext(0.55, 0.25, "$n_{H_2} = \dfrac{10^{17.2}}{\Delta L*T^b}$", fontsize=12)
+    dLaxis = plt.axes([0.50, 0.20, 0.35, 0.02])
+    baxis = plt.axes([0.50, 0.15, 0.35, 0.02])
     dLmin, dLmax, dLinit = 0.01, 0.5, 0.05
-    deltaL = Slider(dLaxis, "delta L", dLmin, dLmax, valinit=dLinit, valstep=np.arange(0.01, 0.501, 0.01))
-    deltaL.valtext.set_text("0.05 cm")
+    deltaL = Slider(dLaxis, "$\Delta L$", dLmin, dLmax, valinit=dLinit, valstep=np.arange(0.01, 0.501, 0.01))
+    deltaL.valtext.set_text("0.05 m")
+    bval = Slider(baxis, "$b$", 1, 2, 1.7, valstep=np.arange(1, 2.1, 0.1))
+    bval.on_changed(update)
     deltaL.on_changed(update)
     plt.show()
 
