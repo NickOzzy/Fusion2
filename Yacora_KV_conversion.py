@@ -75,7 +75,7 @@ def interpN(points, V, point):
 
 
 
-for x in range(2,3):
+#for x in range(2,3):
     # print(TECPEC_Yacora('H2', [x], [2e19], [1], None, None))
     # TECPEC_Yacora('H2p', [x], [2e19], [2], None, None)
     # TECPEC_Yacora('H3p', [x], [2e19], [7], None, None)
