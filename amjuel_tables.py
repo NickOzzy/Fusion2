@@ -3,9 +3,7 @@ import math
 from mat4py import loadmat
 
 mat = loadmat('get_amjuel (4).mat')
-print(mat["AMJ"].keys())
-
-
+#print(mat["AMJ"].keys())
 
 
 def amjuel_tables(type, table, ne, te):

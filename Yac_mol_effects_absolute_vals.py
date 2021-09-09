@@ -13,10 +13,8 @@ def find_nh2ii(T, dl, a, b):
 
 def assemble(Density, no_ne, dl, a, b, h2flag, h2pflag, h3pflag, hmhpflag, hmh2pflag, C_flag):
     D = float(Density)
-    ratios_ADAS = {}
-    ratios_Yacora = {}
     absolutes = {}
-    for j, pair in enumerate(pairs):
+    for j, absol in enumerate(absols):
         for k, T in enumerate(T_vals):
             nh2 = find_nh2ii(T, dl, a, b)
             if h2flag:
@@ -40,79 +38,52 @@ def assemble(Density, no_ne, dl, a, b, h2flag, h2pflag, h3pflag, hmhpflag, hmh2p
                     "Den=" + Density + "T=" + str(T) + "H2p/H2"] / (D ** 2)
             else:
                 nhmnh2p_ne2 = 0
-            APEC1 = ADAS_Recombination_PECs["n=" + str(j + 4) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
-            APEC2 = ADAS_Excitation_PECs["n=" + str(j + 4) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
-            APEC3 = ADAS_Recombination_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
-            APEC4 = ADAS_Excitation_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
-            ratios_ADAS["pair=" + pair + " T=" + str(T)] = ((APEC1 + no_ne * APEC2) / (APEC3 + no_ne * APEC4))
+
             R2R = YDAS_Recombination_PECs["n=2Den=" + Density + "T=" + str(T)].iloc[0]["Pop Coeff"]
             R2E = YDAS_Excitation_PECs["n=2Den=" + Density + "T=" + str(T)].iloc[0]["Pop Coeff"]
-            YPECa1 = YDAS_Recombination_PECs["n=" + str(j + 4) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (
+            #print(D*R2R)
+            YPECa1 = YDAS_Recombination_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (
                         1 + C_flag * D * R2R)
-            YPECa2 = YDAS_Excitation_PECs["n=" + str(j + 4) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (
+            YPECa2 = YDAS_Excitation_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (
                         1 + C_flag * D * R2E)
-            YPECb1 = YDAS_Recombination_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (
-                        1 + C_flag * D * R2R)
-            YPECb2 = YDAS_Excitation_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (
-                        1 + C_flag * D * R2E)
-            YPECa3 = Y_Buster_PECs["Type=H2n=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+            YPECa3 = Y_Buster_PECs["Type=H2n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
                      (1 + C_flag * D * (Y_Buster_PECs["Type=H2n=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECb3 = Y_Buster_PECs["Type=H2n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
-                     (1 + C_flag * D * (Y_Buster_PECs["Type=H2n=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECa4 = Y_Buster_PECs["Type=H2pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+            YPECa4 = Y_Buster_PECs["Type=H2pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
                      (1 + C_flag * D * (Y_Buster_PECs["Type=H2pn=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECb4 = Y_Buster_PECs["Type=H2pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
-                     (1 + C_flag * D * (Y_Buster_PECs["Type=H2pn=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECa5 = Y_Buster_PECs["Type=H3pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+            YPECa5 = Y_Buster_PECs["Type=H3pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
                      (1 + C_flag * D * (Y_Buster_PECs["Type=H3pn=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECb5 = Y_Buster_PECs["Type=H3pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
-                     (1 + C_flag * D * (Y_Buster_PECs["Type=H3pn=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECa6 = Y_Buster_PECs["Type=HmHpn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+            YPECa6 = Y_Buster_PECs["Type=HmHpn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
                      (1 + C_flag * D * (Y_Buster_PECs["Type=HmHpn=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECb6 = Y_Buster_PECs["Type=HmHpn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
-                     (1 + C_flag * D * (Y_Buster_PECs["Type=HmHpn=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECa7 = Y_Buster_PECs["Type=HmH2pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+            YPECa7 = Y_Buster_PECs["Type=HmH2pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
                      (1 + C_flag * D * (Y_Buster_PECs["Type=HmH2pn=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            YPECb7 = Y_Buster_PECs["Type=HmH2pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
-                     (1 + C_flag * D * (Y_Buster_PECs["Type=HmH2pn=2Den=" + Density + "T=" + str(T)]) / NIST_As["n=2"])
-            ratios_Yacora["pair=" + pair + "T=" + str(T)] = ((YPECa1 + no_ne * YPECa2 + (nh2_ne) * YPECa3 + (
-                nh2p_ne) * YPECa4 + (nh3p_ne) * YPECa5 + (nhm_ne) * YPECa6 + (nhmnh2p_ne2) * YPECa7)
-                                                             / (YPECb1 + no_ne * YPECb2 + (nh2_ne) * YPECb3 + (
-                        nh2p_ne) * YPECb4 + (nh3p_ne) * YPECb5 + (nhm_ne) * YPECb6 + (nhmnh2p_ne2) * YPECb7))
 
             absolutes["n=" + str(j + 3) + "T=" + str(T)] = dl * (
                         D ** 2 * YPECa1 + no_ne * D ** 2 * YPECa2 + D ** 2 * nh2_ne * YPECa3 + D ** 2 * nh2p_ne *
                         YPECa4 + D ** 2 * nh3p_ne * YPECa5 + D ** 2 * nhm_ne * YPECa6 + D ** 2 * nhmnh2p_ne2 * YPECa7)
 
-    return ratios_ADAS, ratios_Yacora, absolutes
+    return absolutes
 
 
 def plotting():
     data = []
-    data_dict_A, data_dict_Y, dict_abs = assemble(density, no_ne, 0.05, 17.2, 1.7, False, False, False, False, False, False)
+    dict_abs = assemble(density, no_ne, 0.05, 17.2, 1.7, False, False, False, False, False, False)
     graph = []
     graph2 = []
     graph3 = []
 
-    for i, pair in enumerate(pairs):
-        lev = absols[i]
-        data.append({'Temp': T_vals, 'ratio': [val for key, val in data_dict_A.items() if pair in key],
-                     'ratio2': [val for key, val in data_dict_Y.items() if pair in key], 'Abs': [val for key, val in dict_abs.items() if lev in key]})
-        graph_frame = pd.DataFrame(data[i], columns=['Temp', 'ratio', 'ratio2', 'Abs'])
+    for i, absol in enumerate(absols):
+
+        data.append({'Temp': T_vals, 'Abs': [val for key, val in dict_abs.items() if absol in key]})
+        graph_frame = pd.DataFrame(data[i], columns=['Temp', 'Abs'])
         x_axis = graph_frame['Temp'].tolist()
-        y_axis = graph_frame['ratio'].tolist()
-        y_axis2 = graph_frame['ratio2'].tolist()
         y_axis3 = graph_frame['Abs'].tolist()
         plt.xscale("log")
-        graph.append(plt.plot(x_axis, y_axis, marker='o', color=colour_list[i], visible=False))
-        graph2.append(
-            plt.plot(x_axis, y_axis2, marker='x', color=colour_list[i], label=pair, linestyle="dashed", visible=True))
-        graph3.append(plt.plot(x_axis, y_axis3, marker='o', color=colour_list[i], label=lev, linestyle="dashed", visible=True))
+        graph3.append(plt.plot(x_axis, y_axis3, marker='o', color=colour_list[i], label=absol, linestyle="dashed", visible=True))
     #plt.ylim(0, 0.6)
     plt.xlabel("Temperature in eV")
-    plt.ylabel("Balmer line ratio")
+    plt.ylabel("Absolute brightness")
     plt.legend(loc="upper right")
-    return graph, graph2, graph3
+    return graph3
 
 
 def update(val):
@@ -122,19 +93,16 @@ def update(val):
     dl = deltaL.val
     a = power.val
     b = bval.val
-    data_dict_A, data_dict_Y, dict_abs = assemble(density, no_ne, dl, a, b, Y_radio.get_status()[2], Y_radio.get_status()[3],
+    dict_abs = assemble(density, no_ne, dl, a, b, Y_radio.get_status()[2], Y_radio.get_status()[3],
                                         Y_radio.get_status()[4], Y_radio.get_status()[5], Y_radio.get_status()[6],
                                         Y_correct.get_status()[0])
-    for i, pair in enumerate(pairs):
-        data.append({'Temp': T_vals, 'ratio': [val for key, val in data_dict_A.items() if pair in key],
-                     'ratio2': [val for key, val in data_dict_Y.items() if pair in key]})
-        graph_frame = pd.DataFrame(data[i], columns=['Temp', 'ratio', 'ratio2'])
-        y_axis = graph_frame['ratio'].tolist()
-        y_axis2 = graph_frame['ratio2'].tolist()
-        graph[i][0].set_ydata(y_axis)
-        graph[i][0].set_visible(Y_radio.get_status()[1])
-        graph2[i][0].set_ydata(y_axis2)
-        graph2[i][0].set_visible(Y_radio.get_status()[0])
+    for i, absol in enumerate(absols):
+        data.append({'Temp': T_vals, 'Abs': [val for key, val in dict_abs.items() if absol in key]})
+        graph_frame = pd.DataFrame(data[i], columns=['Temp', 'Abs'])
+        y_axis3 = graph_frame['Abs'].tolist()
+
+        graph3[i][0].set_ydata(y_axis3)
+
     D_Slider.valtext.set_text(density + " /m^3")
     fig.canvas.draw_idle()
 
@@ -158,13 +126,13 @@ if __name__ == '__main__':
 
     pairs = []
     absols = []
-    for n in range(4, 8):
+    for n in range(4, 9):
         pairs.append("B=" + str(n) + "/" + "B=" + str(n - 1))
-        absols.append("B="+str(n-1))
+        absols.append("n="+str(n-1))
     fig = plt.figure()
     fig.set_size_inches(6, 8)
     plt.subplots_adjust(bottom=0.5)
-    graph, graph2, graph3 = plotting()
+    graph3 = plotting()
     D_axis = plt.axes([0.1, 0.35, 0.7, 0.02])
     steps = [np.log10(5e18), np.log10(1e19), np.log10(2e19), np.log10(5e19), np.log10(1e20), np.log10(2e20)]
     dmin, dmax, dinit = np.log10(5e18), np.log10(2e20), np.log10(2e19)

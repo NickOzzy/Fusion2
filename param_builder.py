@@ -13,4 +13,4 @@ for D_val in D_vals:
 
 np.save("params.npy", param_dict)
 
-print(param_dict["Den=5e18T=1H2p/H2"])
+#print(param_dict["Den=5e18T=1H2p/H2"])
