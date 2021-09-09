@@ -75,10 +75,10 @@ def interpN(points, V, point):
 
 
 
-for x in range(3,8):
-    # TECPEC_Yacora('H2', [x], [2e19], [1], None, None)
+#for x in range(2,3):
+    # print(TECPEC_Yacora('H2', [x], [2e19], [1], None, None))
     # TECPEC_Yacora('H2p', [x], [2e19], [2], None, None)
     # TECPEC_Yacora('H3p', [x], [2e19], [7], None, None)
-    TECPEC_Yacora('HmHp', [x], [2e19], [3], [2.2], [3])
+    # print(TECPEC_Yacora('HmHp', [x], [2e19], [3], [2.2], [3]))
     # TECPEC_Yacora('HmH2p', [5], [4.5e19], [1.2], [1.2], [5.1])
 

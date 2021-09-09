@@ -25,7 +25,7 @@ def Yac_data():
 
 
     # make Balmer PECs
-    for n in range(3, 8):
+    for n in range(2, 8):
         for p, T_val in enumerate(T_vals):
             for m, D_val in enumerate(D_vals):
                 Rec_table = Rec_PC_dict["n=" + str(n) + "Den=" + D_val + "T=" + str(T_val)]
@@ -47,8 +47,8 @@ if __name__ == '__main__':
 
     T_vals = [1, 1.5, 2, 3, 7, 10, 15, 20]
     D_vals = ["5e18", "1e19", "2e19", "5e19", "1e20", "2e20"]
-    NIST_As = {"n=3": 4.4114e7, "n=4": 8.4217e6, "n=5": 2.5311e6, "n=6": 9.7346e5, "n=7": 4.3901e5,
-               "n=8": 2.3153e5, "n=9": 1.2159e5}  # data from NIST
+    NIST_As = {"n=2": 4.6999e8, "n=3": 4.4114e7, "n=4": 8.4217e6, "n=5": 2.5311e6, "n=6": 9.7346e5, "n=7": 4.3901e5,
+               "n=8": 2.3153e5, "n=9": 1.2159e5}  # data from NIST, note "n=2" is the lyman alpha coefficient.
     colour_list = plt.cm.Set1(np.linspace(0, 1, 6))
 
     Yac_data.Exc_PCs = {}

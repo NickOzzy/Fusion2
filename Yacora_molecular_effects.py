@@ -6,20 +6,17 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 
-# def find_nh2(T):
-#    return(1.8911e20 / ((T ** 1.4705)))
-
-def find_nh2ii(T, dl):
-    return(10**17.2/(dl*(T ** 1.7)))
+def find_nh2ii(T, dl, a, b):
+    return(10**a/(dl*(T ** b)))
 
 
-def assemble(Density, no_ne, dl, h2flag, h2pflag, h3pflag, hmhpflag, hmh2pflag):
+def assemble(Density, no_ne, dl, a, b, h2flag, h2pflag, h3pflag, hmhpflag, hmh2pflag, C_flag):
     D = float(Density)
     ratios_ADAS = {}
     ratios_Yacora = {}
     for j, pair in enumerate(pairs):
         for k, T in enumerate(T_vals):
-            nh2 = find_nh2ii(T, dl)
+            nh2 = find_nh2ii(T, dl, a, b)
             if h2flag:
                 nh2_ne = nh2/D
             else:
@@ -45,20 +42,32 @@ def assemble(Density, no_ne, dl, h2flag, h2pflag, h3pflag, hmhpflag, hmh2pflag):
             APEC3 = ADAS_Recombination_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
             APEC4 = ADAS_Excitation_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
             ratios_ADAS["pair="+pair+" T="+str(T)] = ((APEC1 + no_ne*APEC2)/(APEC3 + no_ne*APEC4))
-            YPECa1 = YDAS_Recombination_PECs["n=" + str(j + 4)+ "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
-            YPECa2 = YDAS_Excitation_PECs["n=" + str(j + 4)+ "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
-            YPECb1 = YDAS_Recombination_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
-            YPECb2 = YDAS_Excitation_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"]
-            YPECa3 = Y_Buster_PECs["Type=H2n=" + str(j + 4) + "Den=" + Density + "T=" + str(T)]
-            YPECb3 = Y_Buster_PECs["Type=H2n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)]
-            YPECa4 = Y_Buster_PECs["Type=H2pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)]
-            YPECb4 = Y_Buster_PECs["Type=H2pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)]
-            YPECa5 = Y_Buster_PECs["Type=H3pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)]
-            YPECb5 = Y_Buster_PECs["Type=H3pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)]
-            YPECa6 = Y_Buster_PECs["Type=HmHpn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)]
-            YPECb6 = Y_Buster_PECs["Type=HmHpn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)]
-            YPECa7 = Y_Buster_PECs["Type=HmH2pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)]
-            YPECb7 = Y_Buster_PECs["Type=HmH2pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)]
+            R2R = YDAS_Recombination_PECs["n=2Den="+Density+"T="+str(T)].iloc[0]["Pop Coeff"]
+            R2E = YDAS_Excitation_PECs["n=2Den="+Density+"T="+str(T)].iloc[0]["Pop Coeff"]
+            YPECa1 = YDAS_Recombination_PECs["n=" + str(j + 4)+ "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (1 + C_flag*D*R2R)
+            YPECa2 = YDAS_Excitation_PECs["n=" + str(j + 4)+ "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (1 + C_flag*D*R2E)
+            YPECb1 = YDAS_Recombination_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (1 + C_flag*D*R2R)
+            YPECb2 = YDAS_Excitation_PECs["n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)].iloc[0]["PEC"] / (1 + C_flag*D*R2E)
+            YPECa3 = Y_Buster_PECs["Type=H2n=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=H2n=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECb3 = Y_Buster_PECs["Type=H2n=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=H2n=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECa4 = Y_Buster_PECs["Type=H2pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=H2pn=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECb4 = Y_Buster_PECs["Type=H2pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=H2pn=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECa5 = Y_Buster_PECs["Type=H3pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=H3pn=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECb5 = Y_Buster_PECs["Type=H3pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=H3pn=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECa6 = Y_Buster_PECs["Type=HmHpn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=HmHpn=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECb6 = Y_Buster_PECs["Type=HmHpn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=HmHpn=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECa7 = Y_Buster_PECs["Type=HmH2pn=" + str(j + 4) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=HmH2pn=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
+            YPECb7 = Y_Buster_PECs["Type=HmH2pn=" + str(j + 3) + "Den=" + Density + "T=" + str(T)] / \
+                     (1 + C_flag*D*(Y_Buster_PECs["Type=HmH2pn=2Den=" + Density + "T=" + str(T)])/NIST_As["n=2"])
             ratios_Yacora["pair="+pair+"T=" + str(T)] = ((YPECa1 + no_ne*YPECa2 + (nh2_ne)*YPECa3 + (nh2p_ne)*YPECa4 + (nh3p_ne)*YPECa5 + (nhm_ne)*YPECa6 + (nhmnh2p_ne2)*YPECa7)
                                                         /(YPECb1 + no_ne*YPECb2 + (nh2_ne)*YPECb3 + (nh2p_ne)*YPECb4 + (nh3p_ne)*YPECb5 + (nhm_ne)*YPECb6 + (nhmnh2p_ne2)*YPECb7))
 
@@ -67,7 +76,7 @@ def assemble(Density, no_ne, dl, h2flag, h2pflag, h3pflag, hmhpflag, hmh2pflag):
 
 def plotting():
         data = []
-        data_dict_A, data_dict_Y = assemble(density, no_ne, 0.05, False, False, False, False, False)
+        data_dict_A, data_dict_Y = assemble(density, no_ne, 0.05, 17.2, 1.7, False, False, False, False, False, False)
         graph = []
         graph2 = []
 
@@ -93,8 +102,10 @@ def update(val):
     density = str('{:0.0e}'.format(10**(D_Slider.val), 0)).replace("+", "")
     no_ne = no_ne_Slider.val
     dl = deltaL.val
-    data_dict_A, data_dict_Y = assemble(density, no_ne, dl, Y_radio.get_status()[2], Y_radio.get_status()[3],
-                                        Y_radio.get_status()[4], Y_radio.get_status()[5], Y_radio.get_status()[6])
+    a = power.val
+    b = bval.val
+    data_dict_A, data_dict_Y = assemble(density, no_ne, dl, a, b, Y_radio.get_status()[2], Y_radio.get_status()[3],
+                                        Y_radio.get_status()[4], Y_radio.get_status()[5], Y_radio.get_status()[6], Y_correct.get_status()[0])
     for i, pair in enumerate(pairs):
         data.append({'Temp': T_vals, 'ratio': [val for key, val in data_dict_A.items() if pair in key],
                      'ratio2': [val for key, val in data_dict_Y.items() if pair in key]})
@@ -116,8 +127,8 @@ if __name__ == '__main__':
     D_vals = ["5e18", "1e19", "2e19", "5e19", "1e20", "2e20"]
     T_vals = [1, 1.5, 2, 3, 7, 10, 15, 20]
 
-    NIST_As = {"n=3": 4.4114e7, "n=4": 8.4217e6, "n=5": 2.5311e6, "n=6": 9.7346e5, "n=7": 4.3901e5,
-               "n=8": 2.3153e5, "n=9": 1.2159e5}  # data from NIST
+    NIST_As = {"n=2": 4.6999e8, "n=3": 4.4114e7, "n=4": 8.4217e6, "n=5": 2.5311e6, "n=6": 9.7346e5, "n=7": 4.3901e5,
+               "n=8": 2.3153e5, "n=9": 1.2159e5}  # data from NIST, note "n=2" is the lyman alpha coefficient.
     colour_list = plt.cm.Set1(np.linspace(0, 1, 6))
 
     ADAS_Excitation_PECs = np.load("ADAS_Exc_PECs.npy", allow_pickle=True).item()
@@ -151,10 +162,20 @@ if __name__ == '__main__':
                                           'Yacora - include H2+', 'Yacora - include H3+', 'Yacora - include H-H+',
                                           'Yacora - include H-H2+'], [True, False, False, False, False, False, False])
     Y_radio.on_clicked(update)
-    dLaxis = plt.axes([0.55, 0.25, 0.35, 0.02])
+    plt.figtext(0.55, 0.25, "$n_{H_2} = \dfrac{10^a}{\Delta L*T^b}$", fontsize=12)
+    dLaxis = plt.axes([0.50, 0.20, 0.35, 0.02])
+    baxis = plt.axes([0.50, 0.10, 0.35, 0.02])
+    poweraxis = plt.axes([0.50, 0.15, 0.35, 0.02])
     dLmin, dLmax, dLinit = 0.01, 0.5, 0.05
-    deltaL = Slider(dLaxis, "delta L", dLmin, dLmax, valinit=dLinit, valstep=np.arange(0.01, 0.501, 0.01))
-    deltaL.valtext.set_text("0.05 cm")
+    deltaL = Slider(dLaxis, "$\Delta L$", dLmin, dLmax, valinit=dLinit, valstep=np.arange(0.01, 0.501, 0.01))
+    deltaL.valtext.set_text("0.05 m")
     deltaL.on_changed(update)
+    bval = Slider(baxis, "$b$", 1, 2, 1.7, valstep=np.arange(1, 2.1, 0.1))
+    bval.on_changed(update)
+    power = Slider(poweraxis, "$a$", 15, 19, 17.2, valstep=np.arange(15, 19.1, 0.1))
+    power.on_changed(update)
+    Y_correct_axis = plt.axes([0.05, 0.02, 0.4, 0.05])
+    Y_correct = CheckButtons(Y_correct_axis, ['Gnd-state only correction'], [False])
+    Y_correct.on_clicked(update)
     plt.show()
 
