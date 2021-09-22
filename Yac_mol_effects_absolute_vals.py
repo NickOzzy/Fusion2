@@ -124,6 +124,8 @@ if __name__ == '__main__':
     param_dict = np.load("params.npy", allow_pickle=True).item()
     no_ne, density = 0.1, "2e19"
 
+    print(YDAS_Excitation_PECs)
+
     pairs = []
     absols = []
     for n in range(4, 9):
